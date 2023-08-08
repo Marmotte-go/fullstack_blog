@@ -153,10 +153,15 @@ const Write = () => {
       if (status === "draft") {
         setOpenAlert(true);
         setError("Saved as draft, you can check in your profile");
+        setTimeout(() => {
+          navigate("/profile");
+        }, 2000);
       } else {
         setOpenAlert(true);
         setError("Published, you can check in home page");
+        setTimeout(() => {
         navigate("/");
+        }, 2000);
       }
     } catch (err) {
       console.log(err);

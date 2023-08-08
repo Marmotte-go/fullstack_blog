@@ -29,6 +29,7 @@ function App() {
         { path: "post/:id", element: <Single /> },
         { path: "write", element: <Write /> },
         { path: "edit/:id", element: <Write /> },
+        { path: "profile", element: <Profile />},
         { path: "profile/:username", element: <Profile /> },
       ],
     },
