@@ -1,0 +1,74 @@
+@import "../App.scss";
+
+.featured {
+  position: relative;
+  height: 20rem;
+  width: 100%;
+  z-index: 0;
+
+  .featured-img {
+    height: 100%;
+    width: 100%;
+
+    >img {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .featured-content-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    background: rgba(0, 0, 0, 0.3);
+    color: white;
+
+    .featured-content {
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: flex-start;
+      gap: 0.5rem;
+
+      >* {
+        font-weight: 300;
+      }
+
+      >h1 {
+        font-size: 3rem;
+        margin: 0;
+        padding: 0;
+      }
+
+      >h3 {
+        font-size: 1rem;
+        margin: 0;
+        padding: 0;
+        text-align: left;
+      }
+
+      .featured-link {
+        color: white;
+        text-decoration: none;
+
+        >span {
+          font-size: 0.8rem;
+          margin: 0;
+          padding: 0;
+        }
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+
+    }
+  }
+}

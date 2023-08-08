@@ -1,0 +1,38 @@
+@import '../App.scss';
+
+.home{
+  min-height: calc(100vh - 9rem);
+  margin: 0;
+  margin-top: 3rem;
+  background: $primaryDark;
+  padding-bottom: 2rem;
+  transition: all 0.3s ease-in-out;
+
+  &.light{
+    background: linear-gradient($secondary, $secondaryLight);
+    color: $primaryDark;
+  
+    .home-container{
+      background-color: whitesmoke;
+    }
+  }
+
+  .home-container{
+    background-color: $primary;
+    margin: 2rem 1rem;
+    border-radius: 1rem;
+    @media (min-width: $breakpoint) {
+      width: 70%;
+      margin: 2rem auto;
+    }
+
+    .home-posts{
+      > * {
+        border-bottom: 1px solid $secondaryDark;
+        &:last-child{
+          border-bottom: none;
+        }
+      }
+    }
+  }
+}

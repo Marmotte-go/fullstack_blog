@@ -1,0 +1,121 @@
+@import '../App.scss';
+
+.tiptap {
+  max-width: 100%;
+
+  &.light{
+    .toolbar{
+      >button{
+        background-color: $secondaryLight;
+        color: $primaryDark;
+        border: 1px solid $primaryDark;
+        &.is-active {
+          background-color: $secondary;
+        }
+        &:hover{
+          background-color: $secondary;
+        }
+      }
+    }
+    .editor-container{
+      .ProseMirror{
+        background-color: white;
+        &:focus {
+          outline: 1px solid $primary;
+        }
+      }
+    }
+  }
+
+  .toolbar {
+    max-width: 100%;
+    height: auto;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    >button {
+      flex: 0 0 auto;
+      background-color: $primaryDark;
+      color: white;
+      border: 1px solid $secondaryDark;
+      border-radius: 0.5rem;
+      padding: 0.2rem 0.3rem;
+      margin: 0.2rem;
+
+      &.is-active {
+        background-color: $primaryLight;
+      }
+
+      &:hover{
+        background-color: $primaryLight;
+      }
+    }
+  }
+
+  .editor-container {
+    width: 100%;
+    height: 500px;
+
+    .ProseMirror {
+      height: 500px;
+      overflow-y: scroll;
+      background-color: $primary;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      border: none;
+      &:focus {
+        outline: 1px solid $secondary;
+      }
+
+      >*+* {
+        margin-top: 0.5em;
+      }
+
+      mark {
+        background-color: #ffe066;
+        border-radius: 0.25em;
+        box-decoration-break: clone;
+        padding: 0.1em;
+      }
+
+      p {
+        text-align: justify;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        line-height: 1.1;
+        text-align: left;
+      }
+
+      code {
+        background-color: rgba(#616161, 0.3);
+        color: #0f0;
+      }
+
+      blockquote {
+        padding-left: 1rem;
+        border-left: 2px solid rgba($secondaryLight, 1);
+      }
+
+      hr {
+        border: none;
+        border-top: 2px solid rgba(white, 0.3);
+        margin: 2rem 0;
+      }
+
+      img {
+        height: auto;
+        max-width: 100%;
+    
+        &.ProseMirror-selectednode {
+          outline: 1px solid rgba($secondaryLight, 0.5);
+        }
+      }
+    }
+  }
+}

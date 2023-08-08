@@ -1,0 +1,164 @@
+@import '../App.scss';
+
+.single {
+  min-height: calc(100vh - 9rem);
+  margin: 0;
+  margin-top: 3rem;
+  padding: 2rem;
+  color: white;
+  position: relative;
+  background: linear-gradient( black, $primaryDark);
+  transition: all 0.3s ease-in-out;
+
+  &.light {
+    background: linear-gradient($secondary, $secondaryLight);
+    color: $primaryDark;
+
+    .singleWrapper {
+      background-color: whitesmoke;
+      .singleInfo{
+      .singleInfo-author{
+        background-color: $secondaryLight;
+      }}
+    }
+  }
+
+  .singleWrapper {
+    background-color: $primary;
+    border-radius: 1rem;
+    overflow: hidden;
+    margin: 0 auto;
+
+    @media (min-width: $breakpoint) {
+      width: 70%;
+    }
+
+    .singleImg {
+      width: 100%;
+      height: 20rem;
+      object-fit: cover;
+    }
+
+    .singleTitle {
+      font-size: 2.5rem;
+      font-weight: 300;
+      text-align: left;
+      padding: 0 3rem;
+    }
+
+    .singleInfo {
+      padding: 0 3rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .singleInfo-author {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        background-color: $secondaryDark;
+        height: 1.4rem;
+        border-radius: 0.7rem;
+        padding: 0 0.5rem 0 0.1rem;
+        font-size: 0.7rem;
+
+        img {
+          width: 1.2rem;
+          height: 1.2rem;
+          margin-right: 0.2rem;
+          border-radius: 50%;
+          object-fit: cover;
+          background-color: aqua;
+        }
+
+        a {
+          text-decoration: none;
+          color: $primaryDark;
+        }
+      }
+
+      .postcard-created-at {
+        font-size: 0.7rem;
+      }
+
+      .singleEdit-icons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 0.5rem;
+
+        >a {
+          color: inherit;
+          >.singleIcon {
+            cursor: pointer;
+            font-size: 1.2rem;
+          }
+        }
+        .singleIcon {
+          cursor: pointer;
+          font-size: 1.2rem;
+        }
+      }
+    }
+
+    .singleContent {
+      padding: 2rem 3rem;
+
+      >*+* {
+        margin-top: 0.5em;
+      }
+
+      mark {
+        background-color: #ffe066;
+        border-radius: 0.25em;
+        box-decoration-break: clone;
+        padding: 0.1em;
+      }
+
+      p {
+        text-align: justify;
+        line-height: 1.5;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4 {
+        line-height: 1.1;
+        text-align: left;
+      }
+
+      code {
+        background-color: rgba(#616161, 0.3);
+        color: #0f0;
+      }
+
+      blockquote {
+        padding-left: 1rem;
+        border-left: 2px solid rgba($secondaryLight, 1);
+      }
+
+      hr {
+        border: none;
+        border-top: 2px solid rgba(white, 0.3);
+        margin: 2rem 0;
+      }
+
+      img {
+        height: auto;
+        max-width: 100%;
+      }
+
+    }
+  }
+}
+
+.dialogue-wrapper{
+
+  .deleteBtns{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 2rem 0 1rem 0;
+  }
+}

@@ -1,0 +1,178 @@
+@import "../App.scss";
+
+nav {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: $primary;
+  position: fixed;
+  top: 0;
+  height: 3rem;
+  width: 100%;
+  padding: 0 1rem;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.5);
+  z-index: 10;
+  transition: all 0.3s ease-in-out;
+
+  &.light {
+    background-color: $secondaryLight;
+    color: $primaryDark;
+
+    .categories {
+      .cat-link:hover {
+        background-color: $secondaryDark;
+      }
+    }
+
+    .user {
+      .user-info {
+        .dropdown-user {
+          .dropdown-user-content {
+            >ul {
+              background-color: whitesmoke;
+
+              >li:hover {
+                background-color: $secondaryLight;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .logo {
+    .logo-link {
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      color: inherit;
+
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 800;
+      }
+    }
+  }
+
+  .categories {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+
+    .cat-link {
+      padding: 0 0.6rem;
+      border-radius: 1rem;
+      color: inherit;
+      text-decoration: none;
+
+      >span {
+        font-size: 0.9rem;
+        font-weight: 400;
+        line-height: 2rem;
+      }
+
+      &:hover {
+        background-color: $primaryLight;
+      }
+    }
+  }
+
+  .user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+
+    .login-link {
+      color: inherit;
+      text-decoration: none;
+
+      >span {
+        font-weight: 400;
+        line-height: 2rem;
+      }
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 0.2rem;
+      cursor: pointer;
+
+      >img {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .dropdown-user {
+        position: relative;
+        display: inline-block;
+
+        .username {
+          font-weight: 600;
+        }
+
+        .dropdown-user-content {
+          display: none;
+          background-color: inherit;
+          position: absolute;
+          right: 0;
+          box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+          z-index: 100;
+          padding-top: 1rem;
+          margin: 0;
+          height: auto;
+
+          >ul {
+            background-color: $primaryLight;
+            margin: 0;
+            width: 100%;
+            display: block;
+            padding: 0;
+            border-radius: 0 0 0.6rem 0.6rem;
+            overflow: hidden;
+
+            >li {
+              width: 100%;
+              padding: 0.2rem 1rem;
+              margin: 0;
+              list-style: none;
+              line-height: 2;
+              font-size: 0.9rem;
+              font-weight: 400;
+              color: inherit;
+              text-decoration: none;
+              text-align: left;
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              cursor: pointer;
+
+              >a {
+                color: inherit;
+                text-decoration: none;
+              }
+
+              &:hover {
+                background-color: $secondaryDark;
+              }
+            }
+          }
+
+        }
+
+        &:hover {
+          .dropdown-user-content {
+            display: block;
+          }
+        }
+      }
+    }
+  }
+}
