@@ -7,9 +7,10 @@ import { getDoc, doc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
 import PostCard from "../components/PostCard";
+import Dialogue from "../components/Dialogue";
 
 const Profile = () => {
-  const [showEditProfile, setShowEditProfile] = useState(false);
+  const [showEditProfile, setShowEditProfile] = useState(true);
   const [active, setActive] = useState("publish");
 
   const { currentUser } = useContext(AuthContext);
@@ -20,12 +21,34 @@ const Profile = () => {
   const location = useLocation();
   const targetUserId = location.pathname.split("/")[2];
 
+  const [editProfile, setEditProfile] = useState({
+    file: null,
+    avatar: "",
+    displayName: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    const avatarSrc = URL.createObjectURL(file);
+    setEditProfile({ ...editProfile, file, avatar: avatarSrc });
+  };
+
   //set target user
   useEffect(() => {
     //fetch user data
     //if params is empty or current user id, then it will be the current user
     if (!targetUserId || targetUserId === currentUser.uid) {
       setTargetUser(currentUser);
+      setEditProfile({
+        avatar: currentUser.image,
+        displayName: currentUser.displayName,
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
     } else {
       //if the params is not empty and the params is not the current user, then it will be the user that we are viewing
       const getUser = async () => {
@@ -40,9 +63,9 @@ const Profile = () => {
     }
   }, [targetUserId, currentUser]);
 
-  useEffect(() => {
-    console.log(targetUser);
-  }, [targetUser]);
+  // useEffect(() => {
+  //   console.log(targetUser);
+  // }, [targetUser]);
 
   //get posts from target user
   useEffect(() => {
@@ -85,6 +108,15 @@ const Profile = () => {
     //set content to drafts
   };
 
+  //animation of edit profile
+  const splitLabel = (label) => {
+    return label.split("").map((char, index) => (
+      <span style={{ transitionDelay: `${index * 50}ms` }} key={index}>
+        {char === "&" ? "\u00a0" : char}
+      </span>
+    ));
+  };
+
   return (
     <div className="profile">
       <div className="profile-user-info">
@@ -93,41 +125,108 @@ const Profile = () => {
         {currentUser && <button>Edit & Setting</button>}
       </div>
 
-      {showEditProfile && (
-        <div className="profile-edit-container">
+      {showEditProfile && currentUser && (
+        <Dialogue>
           <div className="profile-edit">
             <h3>Edit & Setting</h3>
             <form>
-              <fieldset>
+              <fieldset className="fieldset-1">
                 <legend>Edit Profile</legend>
-                <label htmlFor="displayName">Display Name</label>
-                <input type="text" name="displayName" id="displayName" />
-                <label htmlFor="avatar">Avatar</label>
-                <input type="file" name="avatar" id="avatar" />
-                <input type="submit" value="Save" />
+                <div className="edit-avatar">
+                  <label htmlFor="avatar">
+                    <span>Edit</span>
+                    <img src={editProfile.avatar || marmot} alt="" />
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    name="avatar"
+                    id="avatar"
+                    onChange={handleAvatarChange}
+                    hidden
+                  />
+                </div>
+                <div className="edit-inputBox">
+                  <input
+                  required
+                    type="text"
+                    name="username"
+                    value={editProfile.displayName}
+                    onChange={(e) =>
+                      setEditProfile({
+                        ...editProfile,
+                        displayName: e.target.value,
+                      })
+                    }
+                  />
+                  <label>{splitLabel("Display&Name")}</label>
+                </div>
               </fieldset>
-              <fieldset>
+
+              <fieldset className="fieldset-2">
                 <legend>Change Password</legend>
-                <label htmlFor="currentPassword">Current Password</label>
-                <input
-                  type="password"
-                  name="currentPassword"
-                  id="currentPassword"
-                />
-                <label htmlFor="newPassword">New Password</label>
-                <input type="password" name="newPassword" id="newPassword" />
-                <label htmlFor="confirmNewPassword">Confirm New Password</label>
-                <input
-                  type="password"
-                  name="confirmNewPassword"
-                  id="confirmNewPassword"
-                />
-                <input type="submit" value="Save" />
+                <div className="edit-inputBox">
+                  <input
+                  required
+                    type="password"
+                    name="currentPassword"
+                    id="currentPassword"
+                    value={editProfile.currentPassword}
+                    onChange={(e) =>
+                      setEditProfile({
+                        ...editProfile,
+                        currentPassword: e.target.value,
+                      })
+                    }
+                  />
+                  <label htmlFor="currentPassword">
+                    {splitLabel("Current&Password")}
+                  </label>
+                </div>
+
+                <div className="edit-inputBox">
+                  <input
+                  required
+                    type="password"
+                    name="newPassword"
+                    id="newPassword"
+                    value={editProfile.newPassword}
+                    onChange={(e) =>
+                      setEditProfile({
+                        ...editProfile,
+                        newPassword: e.target.value,
+                      })
+                    }
+                  />
+                  <label htmlFor="newPassword">
+                    {splitLabel("New&Password")}
+                  </label>
+                </div>
+
+                <div className="edit-inputBox">
+                  <input
+                  required
+                    type="password"
+                    name="confirmNewPassword"
+                    id="confirmNewPassword"
+                    value={editProfile.confirmNewPassword}
+                    onChange={(e) =>
+                      setEditProfile({
+                        ...editProfile,
+                        confirmNewPassword: e.target.value,
+                      })
+                    }
+                  />
+                  <label htmlFor="confirmNewPassword">
+                    {splitLabel("Confirm&New&Password")}
+                  </label>
+                </div>
               </fieldset>
+              <button>Save</button>
               <button onClick={() => setShowEditProfile(false)}>Cancel</button>
             </form>
           </div>
-        </div>
+        </Dialogue>
       )}
 
       <div className="profile-user-posts-container">
@@ -146,9 +245,10 @@ const Profile = () => {
           </button>
         </div>
         <div className="profile-user-posts">
-          {posts && posts.filter((post) => post.status === active).map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
+          {posts &&
+            posts
+              .filter((post) => post.status === active)
+              .map((post) => <PostCard key={post.id} post={post} />)}
         </div>
       </div>
     </div>
