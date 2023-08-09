@@ -1,16 +1,18 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./Profile.scss";
 import marmot from "../static/marmot-1.png";
+import { reauthenticateWithCredential, updateProfile } from "firebase/auth";
 import { AuthContext } from "../contexts/AuthContext";
-import { useLocation } from "react-router-dom";
-import { getDoc, doc } from "firebase/firestore";
+import { useLocation, useNavigate } from "react-router-dom";
+import { getDoc, updateDoc, doc } from "firebase/firestore";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../firebase";
+import { auth, db, storage } from "../firebase";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import PostCard from "../components/PostCard";
 import Dialogue from "../components/Dialogue";
 
 const Profile = () => {
-  const [showEditProfile, setShowEditProfile] = useState(true);
+  const [showEditProfile, setShowEditProfile] = useState(false);
   const [active, setActive] = useState("publish");
 
   const { currentUser } = useContext(AuthContext);
@@ -20,6 +22,8 @@ const Profile = () => {
 
   const location = useLocation();
   const targetUserId = location.pathname.split("/")[2];
+
+  const navigate = useNavigate();
 
   const [editProfile, setEditProfile] = useState({
     file: null,
@@ -32,40 +36,96 @@ const Profile = () => {
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
+    console.log(file);
     const avatarSrc = URL.createObjectURL(file);
     setEditProfile({ ...editProfile, file, avatar: avatarSrc });
   };
 
-  //set target user
-  useEffect(() => {
-    //fetch user data
-    //if params is empty or current user id, then it will be the current user
-    if (!targetUserId || targetUserId === currentUser.uid) {
-      setTargetUser(currentUser);
+  const initializeEditProfile = () => {
+    if (currentUser) {
       setEditProfile({
-        avatar: currentUser.image,
+        ...editProfile,
+        avatar: currentUser.photoURL ? currentUser.photoURL : marmot,
         displayName: currentUser.displayName,
         currentPassword: "",
         newPassword: "",
         confirmNewPassword: "",
       });
-    } else {
-      //if the params is not empty and the params is not the current user, then it will be the user that we are viewing
-      const getUser = async () => {
+      setShowEditProfile(true);
+    }
+  };
+
+  useEffect(() => {
+    const fetchTargetUser = async () => {
+      if (!currentUser && !targetUserId) {
+        navigate("/");
+        return;
+      }
+      if (currentUser && (!targetUserId || targetUserId === currentUser?.uid)) {
+        // Fetch current user's data
+        setTargetUser(currentUser);
+      } else {
+        // Fetch target user's data
         try {
           const docSnap = await getDoc(doc(db, "users", targetUserId));
           setTargetUser(docSnap.data());
         } catch (err) {
           console.log(err);
         }
-      };
-      getUser();
-    }
-  }, [targetUserId, currentUser]);
+      }
+    };
+    fetchTargetUser();
+  }, [targetUserId, currentUser, navigate]);
 
-  // useEffect(() => {
-  //   console.log(targetUser);
-  // }, [targetUser]);
+  const handleEditProfile = async () => {
+    //update profile
+    try {
+      if (editProfile.file) {
+        //upload avatar
+        const avatarRef = ref(
+          storage,
+          `user_profiles/${targetUser.uid}/${editProfile.file.name}}`
+        );
+        const snapshot = await uploadBytesResumable(
+          avatarRef,
+          editProfile.file
+        );
+        const avatarUrl = await getDownloadURL(snapshot.ref);
+        //update profile
+        await updateProfile(auth.currentUser, {
+          displayName: editProfile.displayName,
+          photoURL: avatarUrl,
+        });
+        //update user in database
+        await updateDoc(doc(db, "users", targetUser.uid), {
+          displayName: editProfile.displayName,
+          photoURL: avatarUrl,
+        });
+      } else {
+        //update profile
+        await updateProfile(auth.currentUser, {
+          displayName: editProfile.displayName,
+        });
+        //update user in database
+        await updateDoc(doc(db, "users", targetUser.uid), {
+          displayName: editProfile.displayName,
+        });
+      }
+      setShowEditProfile(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    //change password
+    try {
+      //re-authenticate
+      //update password
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   //get posts from target user
   useEffect(() => {
@@ -90,13 +150,12 @@ const Profile = () => {
 
     if (targetUser) {
       getPosts();
-      console.log("get posts");
     }
   }, [targetUser]);
 
-  useEffect(() => {
-    console.log(posts);
-  }, [posts]);
+  // useEffect(() => {
+  //   console.log(posts);
+  // }, [posts]);
 
   const handlePublishedBtn = () => {
     setActive("publish");
@@ -120,22 +179,24 @@ const Profile = () => {
   return (
     <div className="profile">
       <div className="profile-user-info">
-        <img src={marmot} alt="user avatar" />
-        <h3>Marmotte</h3>
-        {currentUser && <button>Edit & Setting</button>}
+        <img src={targetUser?.photoURL || marmot} alt="user avatar" />
+        <h3>{targetUser?.displayName}</h3>
+        {currentUser && (
+          <button onClick={initializeEditProfile}>Edit & Setting</button>
+        )}
       </div>
 
       {showEditProfile && currentUser && (
         <Dialogue>
           <div className="profile-edit">
             <h3>Edit & Setting</h3>
-            <form>
+            <div className="form">
               <fieldset className="fieldset-1">
                 <legend>Edit Profile</legend>
                 <div className="edit-avatar">
                   <label htmlFor="avatar">
                     <span>Edit</span>
-                    <img src={editProfile.avatar || marmot} alt="" />
+                    <img src={editProfile.avatar|| marmot} alt="" />
                   </label>
                   <input
                     type="file"
@@ -148,7 +209,7 @@ const Profile = () => {
                 </div>
                 <div className="edit-inputBox">
                   <input
-                  required
+                    required
                     type="text"
                     name="username"
                     value={editProfile.displayName}
@@ -161,13 +222,21 @@ const Profile = () => {
                   />
                   <label>{splitLabel("Display&Name")}</label>
                 </div>
+
+                <div className="edit-btns">
+                  <button onClick={handleEditProfile}>Save Profile</button>
+                  <button onClick={() => setShowEditProfile(false)}>
+                    Cancel
+                  </button>
+                </div>
               </fieldset>
 
-              <fieldset className="fieldset-2">
+              {//will add this feature later
+              /* <fieldset className="fieldset-2">
                 <legend>Change Password</legend>
                 <div className="edit-inputBox">
                   <input
-                  required
+                    required
                     type="password"
                     name="currentPassword"
                     id="currentPassword"
@@ -186,7 +255,7 @@ const Profile = () => {
 
                 <div className="edit-inputBox">
                   <input
-                  required
+                    required
                     type="password"
                     name="newPassword"
                     id="newPassword"
@@ -205,7 +274,7 @@ const Profile = () => {
 
                 <div className="edit-inputBox">
                   <input
-                  required
+                    required
                     type="password"
                     name="confirmNewPassword"
                     id="confirmNewPassword"
@@ -221,10 +290,17 @@ const Profile = () => {
                     {splitLabel("Confirm&New&Password")}
                   </label>
                 </div>
-              </fieldset>
-              <button>Save</button>
-              <button onClick={() => setShowEditProfile(false)}>Cancel</button>
-            </form>
+
+                <div className="edit-btns">
+                  <button onClick={handleChangePassword}>
+                    Change Password
+                  </button>
+                  <button onClick={() => setShowEditProfile(false)}>
+                    Cancel
+                  </button>
+                </div>
+              </fieldset> */}
+            </div>
           </div>
         </Dialogue>
       )}
@@ -237,12 +313,14 @@ const Profile = () => {
           >
             Published
           </button>
-          <button
-            className={`${active === "draft" ? "active" : ""}`}
-            onClick={handleDraftsBtn}
-          >
-            Drafts
-          </button>
+          {currentUser && (
+            <button
+              className={`${active === "draft" ? "active" : ""}`}
+              onClick={handleDraftsBtn}
+            >
+              Drafts
+            </button>
+          )}
         </div>
         <div className="profile-user-posts">
           {posts &&

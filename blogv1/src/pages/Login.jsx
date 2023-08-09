@@ -22,8 +22,6 @@ const Login = () => {
     confirmPassword: "",
   });
 
-  console.log(registerInput);
-
   const [loginInput, setLoginInput] = useState({
     email: "",
     password: "",
