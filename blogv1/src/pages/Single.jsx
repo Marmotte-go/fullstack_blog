@@ -7,6 +7,7 @@ import parse from "html-react-parser";
 import marmot from "../static/marmot-1.png";
 import Dialogue from "../components/Dialogue";
 import { ThemeContext } from "../contexts/ThemeContext";
+import { AuthContext } from "../contexts/AuthContext";
 
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
@@ -20,6 +21,7 @@ import { generateHTML } from "@tiptap/html";
 
 const Single = () => {
   const { theme } = useContext(ThemeContext);
+  const {currentUser} = useContext(AuthContext);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -39,6 +41,8 @@ const Single = () => {
   const postId = location.pathname.split("/")[2];
   const [post, setPost] = useState({});
   const [output, setOutput] = useState("");
+
+  const [postAuthor, setPostAuthor] = useState(null);
 
   //get post
   useEffect(() => {
@@ -72,6 +76,24 @@ const Single = () => {
     }
   }, [post]);
 
+  //get post author
+  useEffect(() => {
+    const getPostAuthor = async () => {
+      try {
+        const docSnap = await getDoc(doc(db, "users", post.authorId));
+        const author = {
+          id: docSnap.id,
+          displayName: docSnap.data().displayName,
+          photoURL: docSnap.data().photoURL,
+        };
+        setPostAuthor(author);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getPostAuthor();
+  }, [post]);
+
   return (
     <div className={`single ${theme === "light" ? "light" : ""}`}>
       <div className="singleWrapper">
@@ -79,14 +101,15 @@ const Single = () => {
         <h1 className="singleTitle">{post.title}</h1>
         <div className="singleInfo">
           <div className="singleInfo-author">
-            <img src={marmot} alt="" />
+            <img src={postAuthor?.photoURL||marmot} alt="" />
             <Link to={`/profile/${post.authorId}`}>
-              <span>{post.author}</span>
+              <span>{postAuthor?.displayName}</span>
             </Link>
           </div>
           <span className="postcard-created-at">
             {post.createdAt?.toDate().toLocaleString()}
           </span>
+          {currentUser?.uid === post.authorId && (
           <div className="singleEdit-icons">
             <Link to={`/edit/${post.id}`}>
               <i className="singleIcon far fa-edit"></i>
@@ -96,6 +119,7 @@ const Single = () => {
               onClick={() => setShowDialogue(true)}
             ></i>
           </div>
+        )}
         </div>
         <div className="singleContent">{parse(output)}</div>
       </div>

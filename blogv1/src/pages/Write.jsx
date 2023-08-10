@@ -7,7 +7,7 @@ import { ThemeContext } from "../contexts/ThemeContext";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { db, storage } from "../firebase";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 
 import { v4 as uuid } from "uuid";
@@ -120,7 +120,7 @@ const Write = () => {
       const res = await getDoc(doc(db, "blogs", inputPost.postId));
       //if post exists, update it
       if (res.exists()) {
-        await setDoc(
+        await updateDoc(
           doc(db, "blogs", inputPost.postId),
           {
             title: inputPost.title,
@@ -142,9 +142,7 @@ const Write = () => {
           content: jsonContent,
           image: inputPost.image,
           category: inputPost.category,
-          author: currentUser.displayName,
           authorId: currentUser.uid,
-          authorAvatar: currentUser.photoURL,
           status: status,
           createdAt: serverTimestamp(),
         });

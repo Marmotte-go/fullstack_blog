@@ -181,12 +181,12 @@ const Profile = () => {
       <div className="profile-user-info">
         <img src={targetUser?.photoURL || marmot} alt="user avatar" />
         <h3>{targetUser?.displayName}</h3>
-        {currentUser && (
+        {currentUser?.uid === targetUser?.uid && (
           <button onClick={initializeEditProfile}>Edit & Setting</button>
         )}
       </div>
 
-      {showEditProfile && currentUser && (
+      {showEditProfile && currentUser?.uid === targetUser?.uid && (
         <Dialogue>
           <div className="profile-edit">
             <h3>Edit & Setting</h3>
@@ -313,7 +313,7 @@ const Profile = () => {
           >
             Published
           </button>
-          {currentUser && (
+          {currentUser?.uid === targetUser?.uid && (
             <button
               className={`${active === "draft" ? "active" : ""}`}
               onClick={handleDraftsBtn}
