@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./Profile.scss";
 import marmot from "../static/marmot-1.png";
-import { reauthenticateWithCredential, updateProfile } from "firebase/auth";
+import { updateProfile } from "firebase/auth";
 import { AuthContext } from "../contexts/AuthContext";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getDoc, updateDoc, doc } from "firebase/firestore";
@@ -10,8 +10,11 @@ import { auth, db, storage } from "../firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import PostCard from "../components/PostCard";
 import Dialogue from "../components/Dialogue";
+import { ThemeContext } from "../contexts/ThemeContext";
 
 const Profile = () => {
+  const {theme} = useContext(ThemeContext);
+
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [active, setActive] = useState("publish");
 
@@ -117,15 +120,15 @@ const Profile = () => {
     }
   };
 
-  const handleChangePassword = async () => {
-    //change password
-    try {
-      //re-authenticate
-      //update password
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  // const handleChangePassword = async () => {
+  //   //change password
+  //   try {
+  //     //re-authenticate
+  //     //update password
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
   //get posts from target user
   useEffect(() => {
@@ -177,7 +180,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="profile">
+    <div className={`profile ${theme === 'light' ? 'light' : ''}`}>
       <div className="profile-user-info">
         <img src={targetUser?.photoURL || marmot} alt="user avatar" />
         <h3>{targetUser?.displayName}</h3>

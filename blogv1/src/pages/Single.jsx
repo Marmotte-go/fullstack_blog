@@ -14,8 +14,9 @@ import Underline from "@tiptap/extension-underline";
 import Highlight from "@tiptap/extension-highlight";
 import Image from "@tiptap/extension-image";
 
-import { db } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { db, storage } from "../firebase";
+import { doc, getDoc, deleteDoc } from "firebase/firestore";
+import { ref, deleteObject } from "firebase/storage";
 
 import { generateHTML } from "@tiptap/html";
 
@@ -28,9 +29,19 @@ const Single = () => {
 
   const [showDialogue, setShowDialogue] = useState(false);
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     //do something to delete it in the backend
-    //then navigate to the home page
+    try {
+      await deleteDoc(doc(db, "blogs", postId));
+      const deleteAllImages = async () => {
+        const imageRef = ref(storage, `images/${postId}`);
+        await deleteObject(imageRef);
+      }
+      await deleteAllImages();
+    } catch (err) {
+      console.log(err);
+    }
+    setShowDialogue(false);
     navigate("/");
   };
 

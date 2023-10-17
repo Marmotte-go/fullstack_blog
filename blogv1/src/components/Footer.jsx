@@ -14,7 +14,8 @@ const Footer = () => {
         <div className="footer__content">
           <p className="footer__content__text">
             A simple blog system built with React and firebase. Hope you enjoy
-            it!
+            it! <br/>
+            Check more of my portfolio at <a href="https://yuankedev.fun">yuankedev.fun</a>
           </p>
           <img src={marmot} alt="marmot" />
         </div>

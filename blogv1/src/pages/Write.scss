@@ -23,6 +23,13 @@
             outline: 1px solid $primary;
           }
         }
+        #editor-desc {
+          background-color: white;
+          color: $primaryDark;
+          &:focus {
+            outline: 1px solid $primary;
+          }
+        }
       }
       .sidebar{
         .image-preview{

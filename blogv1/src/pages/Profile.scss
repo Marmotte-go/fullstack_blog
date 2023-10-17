@@ -1,7 +1,7 @@
 @import "../App.scss";
 
 .profile {
-  min-height: calc(100vh - 9rem);
+  min-height: calc(100vh - 6rem);
   margin: 0;
   margin-top: 3rem;
   padding: 2rem;
@@ -12,6 +12,67 @@
   flex-direction: column;
   align-items: center;
   gap: 3rem;
+
+  &.light {
+    background: linear-gradient($secondary, $secondaryLight);
+    color: $primaryDark;
+
+    .profile-user-info {
+      > button {
+        background-color: $secondaryLight;
+        color: $primaryDark;
+
+        &:hover {
+          background-color: darken($secondaryLight, 10%);
+        }
+      }
+    }
+
+    .dialogue {
+      .profile-edit {
+        .form {
+          fieldset {
+            border: 1px solid $primary;
+            legend {
+              color: $primaryDark;
+            }
+            .edit-inputBox {
+              input {
+                color: $primary;
+                border-color: $secondaryDark;
+                &:focus,
+                &:valid {
+                  border-color: $secondaryDark;
+                }
+              }
+              label {
+                color: $secondaryDark;
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .profile-user-posts-container{
+      .profile-user-posts-header{
+        border-bottom: 1px solid $primary;
+        >button{
+          color: $primaryDark;
+          &:hover{
+            color: lighten($primaryDark, $amount: 20%);
+          }
+          &.active{
+            color: lighten($primaryDark, $amount: 40%);
+            border-bottom: 2px solid $secondaryDark;
+          }
+        }
+      }
+      .profile-user-posts{
+        background-color: white;
+      }
+    }
+  }
 
   .profile-user-info {
     display: flex;
